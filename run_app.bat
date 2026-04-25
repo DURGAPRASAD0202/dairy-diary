@@ -3,7 +3,7 @@ TITLE Dairy Diary - Startup Script
 COLOR 0B
 SETLOCAL
 
-:: Set paths
+:: Set paths — edit DESKTOP_DIR if your Desktop path is different
 SET "PROJECT_DIR=%~dp0"
 SET "NPM=C:\Program Files\nodejs\npm.cmd"
 SET "DESKTOP_DIR=C:\Users\dindu\Desktop\DairyDiary"
@@ -20,11 +20,12 @@ echo [SYNC] Desktop folder is up to date!
 echo.
 
 :: ---- CHECK DEPENDENCIES ----
-IF NOT EXIST "%PROJECT_DIR%node_modules\" (
-    echo [INFO] node_modules not found. Running npm install first...
+IF NOT EXIST "%PROJECT_DIR%node_modules\next" (
+    echo [INFO] Dependencies missing. Running npm install first...
     echo [INFO] This may take a few minutes on the first run.
     echo.
-    call "%NPM%" install --prefix "%PROJECT_DIR%"
+    cd /d "%PROJECT_DIR%"
+    call "%NPM%" install
     IF ERRORLEVEL 1 (
         echo [ERROR] npm install failed! Please check your Node.js installation.
         pause
@@ -36,8 +37,9 @@ IF NOT EXIST "%PROJECT_DIR%node_modules\" (
 )
 
 :: ---- START APP ----
+:: Use /D flag to set working directory — avoids nested quote issues
 echo [OK] Starting Dairy Diary Next.js App...
-start cmd /k "title Dairy Diary Dev && cd /d "%PROJECT_DIR%" && "%NPM%" run dev"
+start "Dairy Diary Dev" /D "%PROJECT_DIR%" cmd /k ""%NPM%" run dev"
 
 echo.
 echo [INFO] Waiting for server to start (10 seconds)...
